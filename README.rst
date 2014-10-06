@@ -1,8 +1,8 @@
 hscic_apiomatic
 ===============
 
-Scrapes HSCIC website and builds a list of JSON objects for each dataset found
-therein.
+Scrapes HSCIC website and builds a list of JSON objects for each dataset or
+key indicator found therein.
 
 Requires beautifulsoup and requests::
 
@@ -11,6 +11,6 @@ Requires beautifulsoup and requests::
 Usage
 -----
 
-To generate an output file called hscic.json::
+To scrape the indicator portal::
 
-    $ python scrape.py
+    $ python grab_indicators.py
