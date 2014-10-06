@@ -52,3 +52,10 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# VIM
+*.swp
+
+# Application
+indicators_raw/*
+*.json
