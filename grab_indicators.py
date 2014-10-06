@@ -81,8 +81,7 @@ if __name__ == '__main__':
     if not os.path.exists(directory):
         logging.info('Creating directory {}'.format(directory))
         os.makedirs(directory)
-    #for i in range(1, 1699):
-    for i in range(1, 10):
+    for i in range(1, 1699):
         try:
             indicator = get_indicator(i, directory)
             if indicator:
