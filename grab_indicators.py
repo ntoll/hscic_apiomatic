@@ -50,27 +50,43 @@ def get_indicator(i, directory):
     if html:
         soup = BeautifulSoup(html)
         data = soup.find(id="metadata")
-        children = [child for child in data.children if not child.strip]
-        for x in range(0, 100, 2):
-            key = children[x].text.strip().lower()
-            value = children[x+1].text.strip()
-            if key == 'keyword(s)':
-                value = [tag for tag in value.split('\r\n') if tag.strip()]
-            if key == 'download(s)':
-                break
-            result[key] = value
-        links = data.find_all('a')
-        sources = []
-        for source in links:
-            url = 'https://indicators.ic.nhs.uk' + source.attrs['href']
-            description = source.text
-            filetype = url[url.rfind('.') + 1:]
-            sources.append({
-                'url': url,
-                'description': description.replace('.{}'.format(filetype), ''),
-                'filetype': filetype,
-            })
-        result['sources'] = sources
+        children = []
+        for child in data.children:
+            if hasattr(child, 'text'):
+                clean = child.text.strip()
+            else:
+                clean = child.string.strip()
+            if clean:
+                children.append(clean)
+        if children:
+            for x in range(0, len(children), 2):
+                if hasattr(children[x], 'text'):
+                    key = children[x].text.strip().lower()
+                else:
+                    key = children[x].strip().lower()
+                if hasattr(children[x+1], 'text'):
+                    value = children[x+1].text.strip()
+                else:
+                    value = children[x+1].strip()
+                if key == 'keyword(s)':
+                    value = [tag for tag in value.split('\r\n')
+                             if tag.strip()]
+                if key == 'download(s)':
+                    break
+                result[key] = value
+            links = data.find_all('a')
+            sources = []
+            for source in links:
+                url = 'https://indicators.ic.nhs.uk' + source.attrs['href']
+                description = source.text
+                filetype = url[url.rfind('.') + 1:]
+                sources.append({
+                    'url': url,
+                    'description': description.replace('.{}'.format(filetype),
+                                                       ''),
+                    'filetype': filetype,
+                })
+            result['sources'] = sources
     return result
 
 
