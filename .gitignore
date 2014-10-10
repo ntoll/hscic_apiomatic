@@ -58,4 +58,5 @@ target/
 
 # Application
 indicators_raw/*
+datasets_raw/*
 *.json

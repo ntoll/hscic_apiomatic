@@ -10,6 +10,7 @@ import json
 import logging
 import requests
 import urllib
+import html2text
 from bs4 import BeautifulSoup
 from urlparse import urlparse
 
@@ -212,37 +213,48 @@ def get_dataset(dataset_id, dataset, directory):
         logging.info(response.status_code)
         if response.status_code < 400:
             html = response.text
+            with open(cache, 'wb') as output:
+                output.write(html.encode('utf-8'))
     if html:
         soup = BeautifulSoup(html)
         title = soup.find(id='headingtext').text.strip()
         logging.info(title)
+        dataset['title'] = title
+        dataset['id'] = dataset_id
         product = soup.find(id='productview')
-        pub_date = product.find('div', 'pubdate').text.replace('Publicaction date: ', '')
-        summary = product.find('div', 'summary').prettify()
+        pub_date = product.find('div',
+                                'pubdate').text.replace('Publicaction date: ',
+                                                        '')
+        dataset['publication_date'] = pub_date
+        summary = product.find('div', 'summary')
+        if summary:
+            summary = html2text.html2text(summary.prettify())
+            dataset['summary'] = summary
         key_facts = product.find('div', 'notevalue')
         if key_facts:
-            key_facts = key_facts.prettify()
+            key_facts = html2text.html2text(key_facts.prettify())
+            dataset['key_facts'] = key_facts
         resources = product.find_all('div', 'resourcelink')
         files = []
         for res in resources:
             anchor = res.find('a')
-            href = anchor.attrs['href']
-            description = anchor.text
+            url = anchor.attrs['href']
+            filetype = url[url.rfind('.') + 1:]
+            description = anchor.text.replace(' [.{}]'.format(filetype), '')
             files.append({
-                'href': href,
-                'description': description
+                'url': url,
+                'description': description,
+                'filetype': filetype,
             })
-        date_range = product.find('div', 'daterange').text.replace('Date Range: ', '')
+        dataset['sources'] = files
+        date_range = product.find('div', 'daterange')
+        if date_range:
+            date_range = date_range.text.replace('Date Range: ', '')
+            dataset['date_range'] = date_range
         coverage = product.find_all('div', 'coverage')
         geo = [x.text for x in coverage]
-        dataset['title'] = title
-        dataset['id'] = dataset_id
-        dataset['publication_date'] = pub_date
-        dataset['summary'] = summary
-        dataset['key_facts'] = key_facts
-        dataset['resources'] = files
-        dataset['date_range'] = date_range
-        dataset['geographical_coverage'] = geo
+        if geo:
+            dataset['geographical_coverage'] = geo
         return dataset
     else:
         return None
