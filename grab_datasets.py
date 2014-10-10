@@ -301,6 +301,7 @@ if __name__ == '__main__':
                 datasets[dataset] = {
                     'information_types': [i, ],
                 }
+    print('Processing {} datasets'.format(len(datasets)))
     for k, v in datasets.iteritems():
         data = get_dataset(k, v, directory)
         if data:
