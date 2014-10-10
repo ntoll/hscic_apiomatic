@@ -21,6 +21,10 @@ To scrape the current dataset catalogue::
 
 The results are two JSON files: indicators.json and datasets.json.
 
+(The existing indicators.json and datasets.json files in the repos were
+generated at the beginning of October 2014. These can probably be ignored but
+are included for illustrative purposes.)
+
 If anything goes wrong check out the indicator.log / datasets.log files. :-)
 
 Feedback most welcome!
