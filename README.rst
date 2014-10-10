@@ -4,7 +4,7 @@ hscic_apiomatic
 Scrapes HSCIC website and builds a list of JSON objects for each dataset or
 key indicator found therein.
 
-Requires beautifulsoup and requests::
+Requires beautifulsoup, requests and html2text::
 
     $ pip install -r requirements.txt
 
