@@ -58,5 +58,5 @@ target/
 
 # Application
 indicators_raw/*
-datasets_raw/*
+datasets_raw/*.html
 *.json
