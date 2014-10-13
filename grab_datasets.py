@@ -203,11 +203,11 @@ def get_dataset(dataset_id, dataset, directory):
     url_template = 'http://www.hscic.gov.uk/searchcatalogue?productid={}'
     cache = os.path.join(directory, '{}.html'.format(dataset_id))
     html = ''
+    url = url_template.format(dataset_id)
     if os.path.isfile(cache):
         logging.info('Using cached records from {}'.format(cache))
         html = open(cache).read()
     else:
-        url = url_template.format(dataset_id)
         logging.info('Requesting {}'.format(url))
         response = requests.get(url)
         logging.info(response.status_code)
@@ -219,13 +219,14 @@ def get_dataset(dataset_id, dataset, directory):
         soup = BeautifulSoup(html)
         title = soup.find(id='headingtext').text.strip()
         logging.info(title)
+        dataset['source'] = url
         dataset['title'] = title
         dataset['id'] = dataset_id
         product = soup.find(id='productview')
         pub_date = product.find('div',
-                                'pubdate').text.replace('Publicaction date: ',
-                                                        '')
-        dataset['publication_date'] = pub_date
+                                'pubdate').text
+        dataset['publication_date'] = pub_date.replace('Publication date: ',
+                                                       '')
         summary = product.find('div', 'summary')
         if summary:
             summary = html2text.html2text(summary.prettify())
@@ -245,7 +246,7 @@ def get_dataset(dataset_id, dataset, directory):
             description = anchor.text.replace(' [.{}]'.format(filetype), '')
             files.append({
                 'url': url,
-                'description': description,
+                'description': description.strip(),
                 'filetype': filetype,
             })
         dataset['sources'] = files
