@@ -239,6 +239,8 @@ def get_dataset(dataset_id, dataset, directory):
         for res in resources:
             anchor = res.find('a')
             url = anchor.attrs['href']
+            if url.startswith('./'):
+                url = 'http://www.hscic.gov.uk' + url[1:]
             filetype = url[url.rfind('.') + 1:]
             description = anchor.text.replace(' [.{}]'.format(filetype), '')
             files.append({
